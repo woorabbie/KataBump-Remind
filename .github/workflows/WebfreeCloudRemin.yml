@@ -1,4 +1,4 @@
-name: Monthly WebfreeCloud Reminder
+name: WebfreeCloud Reminder
 
 on:
   workflow_dispatch:
