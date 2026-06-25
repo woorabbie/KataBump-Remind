@@ -1,4 +1,4 @@
-name: Monthly KataBump Reminder
+name: Monthly WebfreeCloud Reminder
 
 on:
   workflow_dispatch:
