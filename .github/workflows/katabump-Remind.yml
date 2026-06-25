@@ -1,6 +1,7 @@
 name: KataBump Reminder
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 1 */4 * *"   # 每4天运行一次（UTC时间）
 
