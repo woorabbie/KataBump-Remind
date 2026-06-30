@@ -1,0 +1,19 @@
+name: Giffgaff Reminder
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 16 11 *"   # 每年11月16日 02:00 UTC
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Telegram message
+        run: |
+          if [ "$(date +%Y)" != "2026" ]; then exit 0; fi
+        
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+          -d chat_id=${{ secrets.CHAT_ID }} \
+          -d text="📅 2026-12-30 提醒：Giffgaff紧急续期，续期方式：发短信/余额变动"
