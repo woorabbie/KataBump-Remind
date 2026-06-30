@@ -16,4 +16,4 @@ jobs:
         
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
           -d chat_id=${{ secrets.CHAT_ID }} \
-          -d text="📅 2026-12-30 提醒：德国O2紧急续期"
+          -d text="📅 2026-12-30 提醒：德国O2紧急续期，续期方式：充值"
