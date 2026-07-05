@@ -3,17 +3,33 @@ name: Giffgaff Reminder
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 2 16 11 *"   # 每年11月16日 02:00 UTC
+    # 每天 01:00 UTC（日本时间10:00）
+    - cron: "0 1 * * *"
 
 jobs:
   notify:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send Telegram message
+      - name: Check if today is a reminder day
         run: |
-          if [ "$(date +%Y)" != "2026" ]; then exit 0; fi
-        
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
-          -d chat_id=${{ secrets.CHAT_ID }} \
-          -d text="📅 2026-11-16 提醒：Giffgaff紧急续期，续期方式：发短信/余额变动"
+          START_DATE="2026-05-20"
+
+          TODAY=$(date -u +%F)
+
+          START_SECONDS=$(date -d "$START_DATE" +%s)
+          TODAY_SECONDS=$(date -d "$TODAY" +%s)
+
+          DIFF_DAYS=$(( (TODAY_SECONDS - START_SECONDS) / 86400 ))
+
+          echo "Today: $TODAY"
+          echo "Start: $START_DATE"
+          echo "Diff: $DIFF_DAYS"
+
+          if [ "$DIFF_DAYS" -ge 0 ] && [ $((DIFF_DAYS % 180)) -eq 0 ]; then
+            curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+              -d chat_id=${{ secrets.CHAT_ID }} \
+              -d text="🔔 Giffgaff提醒：你的服务器需要续期了（第 ${DIFF_DAYS} 天,第$((DIFF_DAYS / 180+1))次）"
+          else
+            echo "今天不是提醒日。"
+          fi
