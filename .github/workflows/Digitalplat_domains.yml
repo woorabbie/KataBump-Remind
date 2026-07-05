@@ -29,7 +29,7 @@ jobs:
           if [ "$DIFF_DAYS" -ge 0 ] && [ $((DIFF_DAYS % 365)) -eq 0 ]; then
             curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
               -d chat_id=${{ secrets.CHAT_ID }} \
-              -d text="🔔 Digitalplat domains提醒：你的唯一账号595909839@qq.com所注册的域名moreal.dpdns.org,realive.dpdns.org,yifun.dpdns.org需要续期了（第 ${DIFF_DAYS} 天,第$((DIFF_DAYS / 365+1))年）"
+              -d text="🔔 Digitalplat domains提醒：你的唯一账号595909839@qq.com于2024年12月8日所注册的域名moreal.dpdns.org,realive.dpdns.org,yifun.dpdns.org需要续期了（第 ${DIFF_DAYS} 天,第$((DIFF_DAYS / 365+1))年）"
           else
             echo "今天不是提醒日。"
           fi
