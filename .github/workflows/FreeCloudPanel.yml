@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Check if today is a reminder day
         run: |
-          START_DATE="2026-05-10"
+          START_DATE="2026-05-09"
 
           TODAY=$(date -u +%F)
 
