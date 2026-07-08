@@ -29,7 +29,7 @@ jobs:
           if [ "$DIFF_DAYS" -ge 0 ] && [ $((DIFF_DAYS % 30)) -eq 0 ]; then
             curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
               -d chat_id=${{ secrets.CHAT_ID }} \
-              -d text="🔔 FreeCloudPanel提醒：你的账号rabbie.cn@gmail.com和qn322060@gmail.com于2026年5月注册的FreeCloudPanel需要续期了，请记得连续签到至少5天。（第 ${DIFF_DAYS} 天,第$((DIFF_DAYS / 30+1))次）"
+              -d text="🔔 FreeCloudPanel提醒：你的FreeCloudPanel账号rabbie.cn@gmail.com和qn322060@gmail.com于2026年5月注册的NodeJS-DE-P1需要续期了，请记得连续签到至少5天。（第 ${DIFF_DAYS} 天,第$((DIFF_DAYS / 30+1))次）"
           else
             echo "今天不是提醒日。"
           fi
