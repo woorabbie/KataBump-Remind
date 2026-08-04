@@ -11,25 +11,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check if today is a reminder day
+      - name: Check expire reminder
         run: |
-          START_DATE="2026-04-11"
-
           TODAY=$(date -u +%F)
-
-          START_SECONDS=$(date -d "$START_DATE" +%s)
           TODAY_SECONDS=$(date -d "$TODAY" +%s)
 
-          DIFF_DAYS=$(( (TODAY_SECONDS - START_SECONDS) / 86400 ))
-
           echo "Today: $TODAY"
-          echo "Start: $START_DATE"
-          echo "Diff: $DIFF_DAYS"
 
-          if [ "$DIFF_DAYS" -ge 0 ] && [ $((DIFF_DAYS % 365)) -eq 0 ]; then
-            curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
-              -d chat_id=${{ secrets.CHAT_ID }} \
-              -d text="🔔 Expire Time提醒：用户 卜也 海外云服务器即将到期，请提醒续费。"
-          else
-            echo "今天不是提醒日。"
-          fi
+          # 格式：用户名|首次到期日期|费用
+          USERS=(
+            "卜也|2026-04-11|200/年"
+            "Gada|2026-06-29|300/年"
+            "黄家宁|2026-04-14|150/年"
+            "Lily|2026-05-05|100/年"
+            "升平|2026-06-17|300/年"
+            "文一|2026-06-29|100/年"
+            "文一3|2026-06-29|100/年"
+            "Zz淇|2025-08-05|300/年"
+          )
+
+          for USER in "${USERS[@]}"
+          do
+            IFS="|" read NAME START_DATE PRICE <<< "$USER"
+
+            START_SECONDS=$(date -d "$START_DATE" +%s)
+
+            DIFF_DAYS=$(( (TODAY_SECONDS - START_SECONDS) / 86400 ))
+
+            # 计算距离下一次到期还有多少天
+            REMAIN_DAYS=$((365 - (DIFF_DAYS % 365)))
+
+            # 如果当天到期，剩余天数修正为0
+            if [ "$REMAIN_DAYS" -eq 365 ]; then
+              REMAIN_DAYS=0
+            fi
+
+            echo "$NAME 到期剩余 $REMAIN_DAYS 天"
+
+            if [ "$REMAIN_DAYS" -le 3 ]; then
+
+              NEXT_EXPIRE=$(date -d "$START_DATE + $((DIFF_DAYS / 365 + 1)) year" +%F)
+
+              MESSAGE="🔔 Expire Time提醒：
+                        用户：${NAME}
+                        海外云服务器即将到期，请提醒续费。
+                        
+                        首次日期：${START_DATE}
+                        下次到期：${NEXT_EXPIRE}
+                        费用：${PRICE}
+                        剩余：${REMAIN_DAYS}天"
+
+              curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+                -d chat_id=${{ secrets.CHAT_ID }} \
+                --data-urlencode text="$MESSAGE"
+
+            else
+              echo "$NAME 今天无需提醒。"
+            fi
+
+          done
