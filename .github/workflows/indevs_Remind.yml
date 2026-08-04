@@ -21,7 +21,7 @@ jobs:
           # 格式：开始日期|GitHub账号|域名说明
           DOMAINS=(
             "2026-01-08|wurabbie@gmail.com|5个域名 *.indevs.in"
-            "2025-08-03|rabbie.cn@gmail.com|1个域名 iji.indevs.in"
+            "2025-08-06rabbie.cn@gmail.com|1个域名 iji.indevs.in"
           )
 
           for ITEM in "${DOMAINS[@]}"
