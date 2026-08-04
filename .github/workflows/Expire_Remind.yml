@@ -1,4 +1,4 @@
-name: Expire_Buye Reminder
+name: Expire Reminder
 
 on:
   workflow_dispatch:
