@@ -21,7 +21,7 @@ jobs:
           # 格式：开始日期|GitHub账号|域名说明
           DOMAINS=(
             "2026-01-08|wurabbie@gmail.com|5个域名 *.indevs.in"
-            "2026-08-03|rabbie.cn@gmail.com|1个域名 iji.indevs.in"
+            "2025-08-03|rabbie.cn@gmail.com|1个域名 iji.indevs.in"
           )
 
           for ITEM in "${DOMAINS[@]}"
@@ -34,7 +34,9 @@ jobs:
 
             echo "Checking $ACCOUNT $START_DATE Diff: $DIFF_DAYS"
 
-            if [ "$DIFF_DAYS" -ge 0 ] && [ $((DIFF_DAYS % 365)) -eq 0 ]; then
+            REMAIN_DAYS=$((365 - (DIFF_DAYS % 365)))
+
+            if [ "$REMAIN_DAYS" -le 3 ] && [ "$REMAIN_DAYS" -gt 0 ]; then
 
               YEAR=$((DIFF_DAYS / 365 + 1))
 
