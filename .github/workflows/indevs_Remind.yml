@@ -13,23 +13,45 @@ jobs:
     steps:
       - name: Check if today is a reminder day
         run: |
-          START_DATE="2026-01-08"
-
           TODAY=$(date -u +%F)
-
-          START_SECONDS=$(date -d "$START_DATE" +%s)
           TODAY_SECONDS=$(date -d "$TODAY" +%s)
 
-          DIFF_DAYS=$(( (TODAY_SECONDS - START_SECONDS) / 86400 ))
-
           echo "Today: $TODAY"
-          echo "Start: $START_DATE"
-          echo "Diff: $DIFF_DAYS"
 
-          if [ "$DIFF_DAYS" -ge 0 ] && [ $((DIFF_DAYS % 365)) -eq 0 ]; then
-            curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
-              -d chat_id=${{ secrets.CHAT_ID }} \
-              -d text="🔔 stackryze domains提醒：你的Github账号wurabbie@gmail.com于2026年1月8日所注册的https://domain.stackryze.com/my-domains的5个域名*.indevs.in需要续期了（第 ${DIFF_DAYS} 天,第$((DIFF_DAYS / 365+1))年）"
-          else
-            echo "今天不是提醒日。"
-          fi
+          # 格式：开始日期|GitHub账号|域名说明
+          DOMAINS=(
+            "2026-01-08|wurabbie@gmail.com|5个域名 *.indevs.in"
+            "2026-08-03|rabbie.cn@gmail.com|5个域名 *.indevs.in"
+          )
+
+          for ITEM in "${DOMAINS[@]}"
+          do
+            IFS="|" read START_DATE ACCOUNT DOMAIN_INFO <<< "$ITEM"
+
+            START_SECONDS=$(date -d "$START_DATE" +%s)
+
+            DIFF_DAYS=$(( (TODAY_SECONDS - START_SECONDS) / 86400 ))
+
+            echo "Checking $ACCOUNT $START_DATE Diff: $DIFF_DAYS"
+
+            if [ "$DIFF_DAYS" -ge 0 ] && [ $((DIFF_DAYS % 365)) -eq 0 ]; then
+
+              YEAR=$((DIFF_DAYS / 365 + 1))
+
+              MESSAGE="🔔 stackryze domains提醒：
+                    GitHub账号：${ACCOUNT}
+                    注册日期：${START_DATE}
+                    域名：${DOMAIN_INFO}
+                    管理地址：https://domain.stackryze.com/my-domains
+                    
+                    需要续期！
+                    （第 ${DIFF_DAYS} 天，第 ${YEAR} 年）"
+
+              curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+                -d chat_id=${{ secrets.CHAT_ID }} \
+                --data-urlencode text="$MESSAGE"
+
+            else
+              echo "$ACCOUNT ($START_DATE) 今天不是提醒日。"
+            fi
+          done
